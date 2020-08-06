@@ -1,29 +1,37 @@
 package opsobot
 
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
 
-object OlimpParser extends App {
-  val doc = Jsoup.connect("https://www.olimprest.pl/restauracje/olimp-krakow-avia-software-park").get()
+object OlimpParser {
+  final val MENU_URL = "https://www.olimprest.pl/restauracje/olimp-krakow-avia-software-park"
 
-  val menu = new Menu()
+  def parse(): Menu = {
+    val document: Document = Jsoup.connect(MENU_URL).get()
+    val menu = new Menu()
 
-  val categoryBlocks: Elements = doc.select(".menu-category-block")
-  categoryBlocks.forEach(category => {
-    val categoryName = category.select("h3").html()
-    val dishes = category
-      .select(".menu-dishes")
-      .html()
-      .split(',')
-      .map(_.trim)
+    val categoryBlocks: Elements = document.select(".menu-category-block")
+    categoryBlocks.forEach(category => {
+      val categoryName = category.select("h3").html
 
-    val re = "(.*)<span>(.*)</span>".r
-    val cleanName = categoryName match {
-      case re(a, b) => a + b
-      case _ => categoryName
-    }
+      val re = "(.*)<span>(.*)</span>".r
+      val parsedCategoryName = categoryName match {
+        case re(a, b) => a + b
+        case _ => categoryName
+      }
 
-    menu.add(categoryName, dishes.toList)
-  })
+      menu.addCategory(parsedCategoryName)
 
+      val dishes = category
+        .select(".menu-dishes")
+        .html()
+        .split(',')
+        .map(_.trim)
+        .toList
+
+      menu.addToCategory(parsedCategoryName, dishes)
+    })
+    menu
+  }
 }

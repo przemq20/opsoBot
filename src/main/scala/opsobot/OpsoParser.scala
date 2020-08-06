@@ -2,22 +2,35 @@ package opsobot
 
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
+import scala.jdk.CollectionConverters._
 
 object OpsoParser extends App {
-  val doc = Jsoup.connect("https://opso.pl/menu/").get()
-  val obiadki: Elements = doc.select(".zestawy-obiadowe")
-  val data = obiadki.select("h4").first().html
-  println(s"\nJestem opsoBOT. Menu na ${data.toLowerCase()} to:\n")
+  final val MENU_URL = "https://opso.pl/menu/"
 
-  obiadki.select("h4").forEach(category => {
-    if (category.html() != data) {
-      println(category.html())
-      val obiady = category.nextElementSibling().select("p").select(":not(.priceelement)")
-      obiady.forEach(obiad => println(s"\t- ${obiad.html()}"))
-    }
-  })
+  def parse(): Menu = {
+    val document = Jsoup.connect(MENU_URL).get()
+    val menu = new Menu()
 
-  print("\n\n")
-  println(randomJoke.v1.toString().filter(char => char != '\"'))
-  println(randomJoke.v2.toString().filter(char => char != '\"'))
+    val dinners: Elements = document.select(".zestawy-obiadowe")
+    val headers = dinners.select("h4")
+
+    // TODO: Wyrzucać wyjątek jeśli nie ma menu na dziś - obsługa w Main
+    val data = headers.first().html
+    headers.first().remove()
+
+    headers.forEach(category => {
+      val categoryName = category.html
+      if (categoryName != data) {
+        val dishes = category
+          .nextElementSibling()
+          .select("p")
+          .select(":not(.priceelement)")
+          .eachText()
+          .asScala.toList
+
+        menu.addCategory(categoryName, dishes)
+      }
+    })
+    menu
+  }
 }
