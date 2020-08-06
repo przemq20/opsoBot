@@ -1,5 +1,8 @@
-import org.jsoup._
+package opsobot
+
+import org.jsoup.Jsoup
 import org.jsoup.select.Elements
+
 object OpsoParser extends App {
   val doc = Jsoup.connect("https://opso.pl/menu/").get()
   val obiadki: Elements = doc.select(".zestawy-obiadowe")
