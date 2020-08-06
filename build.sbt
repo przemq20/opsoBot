@@ -9,5 +9,3 @@ resolvers += "scalac repo" at "https://raw.githubusercontent.com/ScalaConsultant
 libraryDependencies += "org.jsoup" % "jsoup" % "1.13.1"
 libraryDependencies += "io.spray" %% "spray-json" % "1.3.5"
 libraryDependencies += "com.github.slack-scala-client" %% "slack-scala-client" % "0.2.10"
-
-
