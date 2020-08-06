@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Dev.opsoBot.iml" filepath="$PROJECT_DIR$/.idea/modules/Dev.opsoBot.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/opsoBot.iml" filepath="$PROJECT_DIR$/.idea/modules/opsoBot.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/opsoBot-build.iml" filepath="$PROJECT_DIR$/.idea/modules/opsoBot-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/project.opsoBot-build.iml" filepath="$PROJECT_DIR$/.idea/modules/project.opsoBot-build.iml" />
     </modules>
   </component>
 </project>

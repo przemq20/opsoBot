@@ -4,7 +4,7 @@ import org.jsoup.Jsoup
 import org.jsoup.select.Elements
 import scala.jdk.CollectionConverters._
 
-object OpsoParser extends App {
+object OpsoParser {
   final val MENU_URL = "https://opso.pl/menu/"
 
   def parse(): Menu = {
