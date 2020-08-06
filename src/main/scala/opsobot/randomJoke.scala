@@ -1,4 +1,5 @@
-import org.jsoup.Jsoup
+package opsobot
+
 import scala.io.Source
 import spray.json._
 
