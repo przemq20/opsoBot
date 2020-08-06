@@ -15,6 +15,9 @@ object OpsoParser extends App {
       val obiady = category.nextElementSibling().select("p").select(":not(.priceelement)")
       obiady.forEach(obiad => println(s"\t- ${obiad.html()}"))
     }
-
   })
+
+  print("\n\n")
+  println(randomJoke.v1.toString().filter(char => char != '\"'))
+  println(randomJoke.v2.toString().filter(char => char != '\"'))
 }
