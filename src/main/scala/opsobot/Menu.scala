@@ -1,0 +1,29 @@
+package opsobot
+
+import scala.collection.mutable
+
+class Menu() {
+  private val data: mutable.Map[String, List[String]] = mutable.Map[String, List[String]]()
+
+  def addCategory(category: String): mutable.Map[String, List[String]] = {
+    addCategory(category, List.empty)
+    data
+  }
+
+  def addCategory(category: String, dishes: List[String]): mutable.Map[String, List[String]] = {
+    data.update(category, dishes)
+    data
+  }
+
+  def addToCategory(category: String, dishes: List[String]): mutable.Map[String, List[String]] = {
+    val existingDishes = data.getOrElseUpdate(category, dishes)
+    if (existingDishes.isEmpty) data.update(category, dishes)
+    data
+  }
+
+  def categories(): Iterable[String] = data.keys
+
+  def dishes(category: String): List[String] = {
+    data.getOrElse(category, List.empty)
+  }
+}
