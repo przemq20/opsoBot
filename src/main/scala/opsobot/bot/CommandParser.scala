@@ -17,7 +17,7 @@ object CommandParser {
     if (command.equals(s"<@${client.getState().self.id}>")) {
       //do nothing
     }
-    else if (command.equals("-pizza") || command.equals("-p")) {
+    else if (command.equals("-pizza")) {
       client.sendMessage(message.channel, "Tutaj kiedyś będzie menu z pizzą")
       logger.info("Sent pizza menu")
     }
