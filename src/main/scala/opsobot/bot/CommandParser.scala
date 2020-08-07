@@ -28,9 +28,23 @@ object CommandParser {
     else if (command.equals("-help")) {
       client.sendMessage(message.channel, commands.Help.help())
     }
-    else if (command.equals("-dailyMenu")) {
-      client.sendMessage(message.channel, "ok, from now on, i will send daily menu to this channel")
-      Bot.channel = message.channel
+    else if (command.equals("-addDailyReminder")) {
+      if (Bot.channels.contains(message.channel)) {
+        client.sendMessage(message.channel, "This channel already is subscribing to daily menu")
+      }
+      else {
+        client.sendMessage(message.channel, "ok, from now on, i will send daily menu to this channel")
+        Bot.channels += message.channel
+      }
+    }
+    else if (command.equals("-rmDailyReminder")) {
+      if (Bot.channels.contains(message.channel)) {
+        client.sendMessage(message.channel, "Ok, you will not received my daily updates")
+        Bot.channels.subtractOne(message.channel)
+      }
+      else {
+        client.sendMessage(message.channel, "I can't delete this channel, because it's not on the list")
+      }
     }
     else {
       //sory, nie rozumiem twojej komendy
