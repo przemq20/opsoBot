@@ -128,3 +128,6 @@ src/main/scala/resources/Token.scala
 *.log
 
 # End of https://www.toptal.com/developers/gitignore/api/scala,sbt,intellij
+
+# ROCKETCHAT
+rocketchat/
