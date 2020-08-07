@@ -1,18 +1,21 @@
+package opsobot.bot
 
 import java.util.Calendar
 
 import akka.actor.ActorSystem
-import org.slf4j.LoggerFactory
 import opsobot.{OpsoParser, randomJoke}
+import org.slf4j.LoggerFactory
 import slack.SlackUtil
 import slack.rtm.SlackRtmClient
 
 import scala.concurrent.Future
 
 object Bot extends App {
-  val token = resources.Token.token
+  private val token = resources.Token.token
+  private var channel = "C017WCACXD5"
   implicit val system: ActorSystem = ActorSystem("slack")
   val logger = LoggerFactory.getLogger(Bot.getClass)
+
   import system.dispatcher
 
   val client = SlackRtmClient(token)
@@ -22,16 +25,11 @@ object Bot extends App {
       val mentionedIds = SlackUtil.extractMentionedIds(message.text)
       logger.info(s"Client ID: ${client.getState().self.id}")
       if (mentionedIds.contains(client.getState().self.id)) {
-        if (message.text.contains("-pizza") || message.text.contains("-p")) {
-          client.sendMessage(message.channel, "Tutaj kiedyś będzie menu z pizzą")
-          logger.info("Sent pizza menu")
-        }
-        else if(message.text.contains("-joke")){
-          client.sendMessage(message.channel, randomJoke.randomJoke())
-          logger.info("Sent joke")
-        }
-        else {
-          client.sendMessage(message.channel, s"<@${message.user}>: Hey!")
+        CommandParser.greetings(message, client)
+        val commands = message.text.split(" ").distinct
+        logger.info(s"I received commands: ${commands.mkString("Array(", ", ", ")")}")
+        for (command <- commands){
+          CommandParser.parse(command, message, client)
         }
       }
     }
@@ -40,7 +38,7 @@ object Bot extends App {
   val future1 = Future {
     while (true) {
       if (Calendar.getInstance().get(Calendar.SECOND) % 60 == 1) {
-        client.sendMessage("C017WCACXD5", OpsoParser.parse().toString) //tutaj channel będzie do zmiany
+        client.sendMessage(channel, OpsoParser.parse().toString) //tutaj channel będzie do zmiany tylko jeszcze nie wiem na jaki, możliwe, że trzeba będzie to rozwiązać przez jakieś zapytanie do bota, albo wywołanie go na jakimś konkretnym kanale, na razie do testów pozostaje tak jak jest
         logger.info(s"Sent menu, date: ${Calendar.getInstance().getTime}")
       }
       Thread.sleep(1000)
