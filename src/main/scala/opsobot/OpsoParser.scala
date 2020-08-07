@@ -1,6 +1,5 @@
 package opsobot
 
-import java.util.Calendar
 
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
