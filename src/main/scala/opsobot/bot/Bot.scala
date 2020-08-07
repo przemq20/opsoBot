@@ -1,5 +1,8 @@
 package opsobot.bot
 
+import java.time.{DayOfWeek, LocalDate, LocalTime}
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.Calendar
 
 import akka.actor.ActorSystem
@@ -43,40 +46,56 @@ object Bot extends App {
 
   Future {
     while (true) {
-      if (Calendar.getInstance().get(Calendar.SECOND) % 60 == 1) {
-        client.sendMessage(channel, "OPSO MENU:")
-        client.sendMessage(channel, OpsoParser.parse().toString) //tutaj channel będzie do zmiany tylko jeszcze nie wiem na jaki, możliwe, że trzeba będzie to rozwiązać przez jakieś zapytanie do bota, albo wywołanie go na jakimś konkretnym kanale, na razie do testów pozostaje tak jak jest
-        client.sendMessage(channel, "OLIMP MENU:")
-        client.sendMessage(channel, OlimpParser.parse().toString)
-        logger.info(s"Sent menu, date: ${Calendar.getInstance().getTime}")
-      }
-      Thread.sleep(1000)
+      val secondOfMinute = LocalTime.now.getSecond
+//      if (secondOfMinute == 0) {
+      sendMenu(channel, "OPSO", OpsoParser.parse().toString)
+      sendMenu(channel, "OLIMP", OlimpParser.parse().toString)
+      logger.info(s"Sent menu, date: ${Calendar.getInstance().getTime}")
+//      }
+      Thread.sleep(5000)
     }
   }
 
   Future {
     while (true) {
-      val dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
-      if (dayOfWeek == Calendar.TUESDAY || dayOfWeek == Calendar.THURSDAY || dayOfWeek == Calendar.FRIDAY) {
-        if (Calendar.getInstance().get(Calendar.HOUR) == 10 && Calendar.getInstance().get(Calendar.MINUTE) == 0 && Calendar.getInstance().get(Calendar.SECOND) == 0) {
-          client.sendMessage(channel, s"Jest $dayOfWeek, dzień PIZZY. Dzisiejsze menu to:")
-          client.sendMessage(channel, "OPSO MENU:")
-          client.sendMessage(channel, OpsoParser.parse().toString) //tutaj channel będzie do zmiany tylko jeszcze nie wiem na jaki, możliwe, że trzeba będzie to rozwiązać przez jakieś zapytanie do bota, albo wywołanie go na jakimś konkretnym kanale, na razie do testów pozostaje tak jak jest
-          client.sendMessage(channel, "OLIMP MENU:")
-          client.sendMessage(channel, OlimpParser.parse().toString)
+      val currentDayOfWeek = LocalDate.now.getDayOfWeek
+      val currentTime = LocalTime.now.truncatedTo(ChronoUnit.SECONDS)
+      val localizedDay = Locale.dayOfWeek(currentDayOfWeek)
 
+      if (currentDayOfWeek == DayOfWeek.TUESDAY
+        || currentDayOfWeek == DayOfWeek.THURSDAY
+        || currentDayOfWeek == DayOfWeek.FRIDAY) {
+
+        val tenOClock = LocalTime.of(10, 0, 0)
+        if (currentTime == tenOClock) {
+          client.sendMessage(channel, s"Jest $localizedDay, dzień PIZZY. Dzisiejsze menu to:")
+          // client.sendMessage(channel, OpsoParser.parse().toString) //tutaj channel będzie do zmiany tylko jeszcze nie wiem na jaki, możliwe, że trzeba będzie to rozwiązać przez jakieś zapytanie do bota, albo wywołanie go na jakimś konkretnym kanale, na razie do testów pozostaje tak jak jest
+          sendMenu(channel, "OPSO", OpsoParser.parse().toString)
+          sendMenu(channel, "OLIMP", OlimpParser.parse().toString)
+        }
+      } else if (currentDayOfWeek == DayOfWeek.MONDAY
+        || currentDayOfWeek == DayOfWeek.WEDNESDAY) {
+        val elevenOClock = LocalTime.of(11, 0, 0)
+        if (currentTime == elevenOClock) {
+          client.sendMessage(channel, s"Jest $localizedDay. Dzisiejsze menu to:")
+          sendMenu(channel, "OPSO", OpsoParser.parse().toString)
+          sendMenu(channel, "OLIMP", OlimpParser.parse().toString)
         }
       }
-      else if (dayOfWeek == Calendar.MONDAY || dayOfWeek == Calendar.WEDNESDAY) {
-        if (Calendar.getInstance().get(Calendar.HOUR) == 11 && Calendar.getInstance().get(Calendar.MINUTE) == 0 && Calendar.getInstance().get(Calendar.SECOND) == 0) {
-          client.sendMessage(channel, s"Jest $dayOfWeek. Dzisiejsze menu to:")
-          client.sendMessage(channel, "OPSO MENU:")
-          client.sendMessage(channel, OpsoParser.parse().toString) //tutaj channel będzie do zmiany tylko jeszcze nie wiem na jaki, możliwe, że trzeba będzie to rozwiązać przez jakieś zapytanie do bota, albo wywołanie go na jakimś konkretnym kanale, na razie do testów pozostaje tak jak jest
-          client.sendMessage(channel, "OLIMP MENU:")
-          client.sendMessage(channel, OlimpParser.parse().toString)
-        }
-        Thread.sleep(1000)
-      }
+      Thread.sleep(900)
     }
+  }
+
+  def sendMenu(channel: String, restaurant: String, menu: String): Unit = {
+    val sb = new StringBuilder()
+    sb.addAll(restaurant.toUpperCase)
+    sb.addAll(" Menu:\n")
+    sb.addAll("----" * restaurant.length)
+    sb.addAll("\n")
+    sb.addAll(menu)
+    sb.addAll("\n")
+    sb.addAll("-" * 40)
+    sb.addAll("\n")
+    client.sendMessage(channel, sb.result())
   }
 }
