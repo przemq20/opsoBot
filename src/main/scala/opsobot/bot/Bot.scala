@@ -12,7 +12,7 @@ import scala.concurrent.Future
 
 object Bot extends App {
   private val token = resources.Token.token
-  private var channel = "C017WCACXD5"
+  var channel = "C017WCACXD5"
   implicit val system: ActorSystem = ActorSystem("slack")
   val logger = LoggerFactory.getLogger(Bot.getClass)
 
@@ -27,7 +27,9 @@ object Bot extends App {
       if (mentionedIds.contains(client.getState().self.id)) {
         CommandParser.greetings(message, client)
         val commands = message.text.split(" ").distinct
+
         logger.info(s"I received commands: ${commands.mkString("Array(", ", ", ")")}")
+
         for (command <- commands){
           CommandParser.parse(command, message, client)
         }
