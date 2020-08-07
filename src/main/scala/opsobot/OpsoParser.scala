@@ -10,10 +10,6 @@ import scala.jdk.CollectionConverters._
 object OpsoParser {
   final val MENU_URL = "https://opso.pl/menu/"
 
-  def main(args: Array[String]): Unit = {
-    println(OpsoParser.parse())
-  }
-
   def parse(): Menu = {
     val document = Jsoup.connect(MENU_URL).get()
     val menu = new Menu()
