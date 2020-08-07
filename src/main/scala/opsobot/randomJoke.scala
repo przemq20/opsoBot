@@ -11,4 +11,13 @@ object randomJoke {
   val v2 = spray.asJsObject().getFields("punchline").head
 
   (v1, v2)
+
+  def randomJoke(): String = {
+    val builder = new StringBuilder
+    builder.addAll(v1.toString())
+    builder.addAll("\n")
+    builder.addAll(v2.toString())
+
+    builder.result()
+  }
 }
