@@ -122,7 +122,7 @@ project/plugins/project/
 .cache
 .lib/
 .idea/
-
+src/main/scala/resources/Token.scala
 ### Scala ###
 *.class
 *.log

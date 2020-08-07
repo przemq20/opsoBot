@@ -10,7 +10,7 @@ import slack.rtm.SlackRtmClient
 import scala.concurrent.Future
 
 object Bot extends App {
-  val token = "xoxb-1268418401399-1278662473782-DwtPVEHTmptqnTj86Bfdx2Rw"
+  val token = resources.Token.token
   implicit val system: ActorSystem = ActorSystem("slack")
   val logger = LoggerFactory.getLogger(Bot.getClass)
   import system.dispatcher
