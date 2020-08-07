@@ -3,7 +3,7 @@ package opsobot.bot
 import java.util.Calendar
 
 import akka.actor.ActorSystem
-import opsobot.{OpsoParser, randomJoke}
+import opsobot.{OlimpParser, OpsoParser, randomJoke}
 import org.slf4j.LoggerFactory
 import slack.SlackUtil
 import slack.rtm.SlackRtmClient
@@ -20,7 +20,7 @@ object Bot extends App {
 
   val client = SlackRtmClient(token)
 
-  val future2 = Future {
+  Future {
     client.onMessage { message =>
       val mentionedIds = SlackUtil.extractMentionedIds(message.text)
       logger.info(s"Client ID: ${client.getState().self.id}")
@@ -29,21 +29,54 @@ object Bot extends App {
         val commands = message.text.split(" ").distinct
 
         logger.info(s"I received commands: ${commands.mkString("Array(", ", ", ")")}")
-
-        for (command <- commands){
-          CommandParser.parse(command, message, client)
+        if (commands.length == 1) {
+          client.sendMessage(message.channel, "Jeśli potrzebujesz pomocy wpisz \"@opsoolimpbot -help\"")
+        }
+        else {
+          for (command <- commands) {
+            CommandParser.parse(command, message, client)
+          }
         }
       }
     }
   }
 
-  val future1 = Future {
+  Future {
     while (true) {
       if (Calendar.getInstance().get(Calendar.SECOND) % 60 == 1) {
+        client.sendMessage(channel, "OPSO MENU:")
         client.sendMessage(channel, OpsoParser.parse().toString) //tutaj channel będzie do zmiany tylko jeszcze nie wiem na jaki, możliwe, że trzeba będzie to rozwiązać przez jakieś zapytanie do bota, albo wywołanie go na jakimś konkretnym kanale, na razie do testów pozostaje tak jak jest
+        client.sendMessage(channel, "OLIMP MENU:")
+        client.sendMessage(channel, OlimpParser.parse().toString)
         logger.info(s"Sent menu, date: ${Calendar.getInstance().getTime}")
       }
       Thread.sleep(1000)
+    }
+  }
+
+  Future {
+    while (true) {
+      val dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
+      if (dayOfWeek == Calendar.TUESDAY || dayOfWeek == Calendar.THURSDAY || dayOfWeek == Calendar.FRIDAY) {
+        if (Calendar.getInstance().get(Calendar.HOUR) == 10 && Calendar.getInstance().get(Calendar.MINUTE) == 0 && Calendar.getInstance().get(Calendar.SECOND) == 0) {
+          client.sendMessage(channel, s"Jest $dayOfWeek, dzień PIZZY. Dzisiejsze menu to:")
+          client.sendMessage(channel, "OPSO MENU:")
+          client.sendMessage(channel, OpsoParser.parse().toString) //tutaj channel będzie do zmiany tylko jeszcze nie wiem na jaki, możliwe, że trzeba będzie to rozwiązać przez jakieś zapytanie do bota, albo wywołanie go na jakimś konkretnym kanale, na razie do testów pozostaje tak jak jest
+          client.sendMessage(channel, "OLIMP MENU:")
+          client.sendMessage(channel, OlimpParser.parse().toString)
+
+        }
+      }
+      else if (dayOfWeek == Calendar.MONDAY || dayOfWeek == Calendar.WEDNESDAY) {
+        if (Calendar.getInstance().get(Calendar.HOUR) == 11 && Calendar.getInstance().get(Calendar.MINUTE) == 0 && Calendar.getInstance().get(Calendar.SECOND) == 0) {
+          client.sendMessage(channel, s"Jest $dayOfWeek. Dzisiejsze menu to:")
+          client.sendMessage(channel, "OPSO MENU:")
+          client.sendMessage(channel, OpsoParser.parse().toString) //tutaj channel będzie do zmiany tylko jeszcze nie wiem na jaki, możliwe, że trzeba będzie to rozwiązać przez jakieś zapytanie do bota, albo wywołanie go na jakimś konkretnym kanale, na razie do testów pozostaje tak jak jest
+          client.sendMessage(channel, "OLIMP MENU:")
+          client.sendMessage(channel, OlimpParser.parse().toString)
+        }
+        Thread.sleep(1000)
+      }
     }
   }
 }
