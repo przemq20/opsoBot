@@ -11,26 +11,28 @@ object OlimpParser {
     val document: Document = Jsoup.connect(MENU_URL).get()
     val menu = new Menu()
 
-    val categoryBlocks: Elements = document.select(".menu-category-block")
-    categoryBlocks.forEach(category => {
-      val categoryName = category.select("h3").html
+    val dishTypeBlocks: Elements = document.select(".menu-category-block")
+    if (dishTypeBlocks.isEmpty) throw NoUpdatedMenuException("Olimp menu is unavailable")
 
-      val re = "(.*)<span>(.*)</span>".r
-      val parsedCategoryName = categoryName match {
-        case re(a, b) => a + b
-        case _ => categoryName
+    dishTypeBlocks.forEach(block => {
+      val dishType = block.select("h3").text
+
+      val spanTagRegex = "(.*)<span>(.*)</span>".r
+      val parsedDishType = dishType match {
+        case spanTagRegex(a, b) => a + b
+        case _ => dishType
       }
 
-      menu.addCategory(parsedCategoryName)
+      menu.addCategory(parsedDishType)
 
-      val dishes = category
+      val dishes = block
         .select(".menu-dishes")
-        .html()
+        .text()
         .split(',')
         .map(_.trim)
         .toList
 
-      menu.addToCategory(parsedCategoryName, dishes)
+      menu.addToCategory(parsedDishType, dishes)
     })
     menu
   }
