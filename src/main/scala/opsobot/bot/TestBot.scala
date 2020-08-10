@@ -5,7 +5,7 @@ import java.util.Calendar
 
 import akka.actor.ActorSystem
 import opsobot.{OlimpParser, OpsoParser}
-import opsobot.bot.Bot.{channel, client, logger, sendMenu}
+import opsobot.bot.Bot.{channels, client, logger}
 import org.slf4j.LoggerFactory
 import slack.SlackUtil
 import slack.rtm.SlackRtmClient
@@ -48,8 +48,10 @@ object TestBot extends App {
       val secondOfMinute = LocalTime.now.getSecond
       println(secondOfMinute)
       if (secondOfMinute % 10 == 0) {
-        sendMenu(channel, "OPSO", OpsoParser.parse().toString)
-        sendMenu(channel, "OLIMP", OlimpParser.parse().toString)
+        for (channel <- channels) {
+          sendMenu(channel, "OPSO", OpsoParser.parse().toString)
+          sendMenu(channel, "OLIMP", OlimpParser.parse().toString)
+        }
       }
       Thread.sleep(1000)
     }
