@@ -1,13 +1,11 @@
 package opsobot.bot
 
-import java.time.{DayOfWeek, LocalDate, LocalTime}
-import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.time.{DayOfWeek, LocalDate, LocalTime}
 import java.util.Calendar
 
 import akka.actor.ActorSystem
-import opsobot.bot.TestBot.logger
-import opsobot.{OlimpParser, OpsoParser, RandomJoke}
+import opsobot.{OlimpParser, OpsoParser}
 import org.slf4j.LoggerFactory
 import slack.SlackUtil
 import slack.rtm.SlackRtmClient
@@ -58,7 +56,7 @@ object Bot extends App {
 
         val tenOClock = LocalTime.of(10, 0, 0)
         if (currentTime == tenOClock) {
-          client.sendMessage(channel, s"Jest $localizedDay, dzień PIZZY. Dzisiejsze menu to:")
+          client.sendMessage(channel, s"Witaj w $localizedDay! Dzisiaj możesz zamówić PIZZUNIĘ w OPSO. Ponadto, menu na dzisiaj to:")
           // client.sendMessage(channel, OpsoParser.parse().toString) //tutaj channel będzie do zmiany tylko jeszcze nie wiem na jaki, możliwe, że trzeba będzie to rozwiązać przez jakieś zapytanie do bota, albo wywołanie go na jakimś konkretnym kanale, na razie do testów pozostaje tak jak jest
           sendMenu(channel, "OPSO", OpsoParser.parse().toString)
           sendMenu(channel, "OLIMP", OlimpParser.parse().toString)
@@ -67,7 +65,7 @@ object Bot extends App {
         || currentDayOfWeek == DayOfWeek.WEDNESDAY) {
         val elevenOClock = LocalTime.of(11, 0, 0)
         if (currentTime == elevenOClock) {
-          client.sendMessage(channel, s"Jest $localizedDay. Dzisiejsze menu to:")
+          client.sendMessage(channel, s"Witaj w $localizedDay! Menu na dzisiaj to:")
           sendMenu(channel, "OPSO", OpsoParser.parse().toString)
           sendMenu(channel, "OLIMP", OlimpParser.parse().toString)
         }
