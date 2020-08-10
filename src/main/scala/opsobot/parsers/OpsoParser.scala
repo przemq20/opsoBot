@@ -22,11 +22,10 @@ object OpsoParser {
         java.time.LocalDate.of(year.toInt, month.toInt, day.toInt)
       case _ => throw new IllegalArgumentException("Opso date is not recognized")
     }
-
     val currentDate = java.time.LocalDate.now
-      if (opsoDate != currentDate) {
-        //throw NoUpdatedMenuException("Opso menu is not up to date")
-        return menu
+    if (opsoDate != currentDate) {
+      //throw NoUpdatedMenuException("Opso menu is not up to date")
+      return menu
     }
 
     val dateHeader = headers.first

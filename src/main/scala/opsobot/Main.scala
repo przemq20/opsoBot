@@ -1,10 +1,10 @@
 package opsobot
 
-import opsobot.parsers.OlimpParser
+import opsobot.parsers.{OlimpParser, OpsoParser}
 
 object Main {
   def main(args: Array[String]): Unit = {
-    val menu = OlimpParser.parse()
+    val menu = OpsoParser.parse()
 
     println("Olimp Menu:")
     println(menu.toString)
