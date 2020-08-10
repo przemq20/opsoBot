@@ -1,6 +1,6 @@
 package opsobot.bot
 
-import opsobot.randomJoke
+import opsobot.RandomJoke
 import org.slf4j.{Logger, LoggerFactory}
 import slack.models.Message
 import slack.rtm.SlackRtmClient
@@ -22,7 +22,7 @@ object CommandParser {
       logger.info("Sent pizza menu")
     }
     else if (command.equals("-joke")) {
-      client.sendMessage(message.channel, randomJoke.randomJoke())
+      client.sendMessage(message.channel, RandomJoke.randomJoke())
       logger.info("Sent joke")
     }
     else if (command.equals("-help")) {

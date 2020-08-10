@@ -29,17 +29,22 @@ class Menu() {
 
   override def toString: String = {
     val builder = new StringBuilder()
-    data.foreach(category => {
-      val categoryName = category._1
-      val dishesList = category._2
-      builder.addAll(categoryName)
-      builder.addAll(":")
-      dishesList.foreach(dish => {
-        builder.addAll("\n\t- ")
-        builder.addAll(dish)
+    if (data.isEmpty) {
+      "Menu na dzisiaj jest niedostępne"
+    }
+    else {
+      data.foreach(category => {
+        val categoryName = category._1
+        val dishesList = category._2
+        builder.addAll(categoryName)
+        builder.addAll(":")
+        dishesList.foreach(dish => {
+          builder.addAll("\n\t- ")
+          builder.addAll(dish)
+        })
+        builder.addAll("\n")
       })
-      builder.addAll("\n")
-    })
-    builder.result()
+      builder.result()
+    }
   }
 }

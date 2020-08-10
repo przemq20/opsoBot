@@ -1,6 +1,5 @@
 package opsobot
 
-import java.util.Calendar
 
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
@@ -24,9 +23,14 @@ object OpsoParser {
         java.time.LocalDate.of(year.toInt, month.toInt, day.toInt)
       case _ => throw new IllegalArgumentException("Opso date is not recognized")
     }
+
     val currentDate = java.time.LocalDate.now
-    if (opsoDate != currentDate) {
-      throw NoUpdatedMenuException("Opso menu is not up to date")
+    println(s"$opsoDate $currentDate")
+    try {
+      if (opsoDate != currentDate) {
+        //throw NoUpdatedMenuException("Opso menu is not up to date")
+        return menu
+      }
     }
 
     val dateHeader = headers.first

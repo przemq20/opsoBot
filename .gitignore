@@ -126,5 +126,8 @@ src/main/scala/resources/Token.scala
 ### Scala ###
 *.class
 *.log
-
+src/main/scala/opsobot/Playground.scala
 # End of https://www.toptal.com/developers/gitignore/api/scala,sbt,intellij
+
+# ROCKETCHAT
+rocketchat/

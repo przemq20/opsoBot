@@ -12,8 +12,10 @@ object OlimpParser {
     val menu = new Menu()
 
     val dishTypeBlocks: Elements = document.select(".menu-category-block")
-    if (dishTypeBlocks.isEmpty) throw NoUpdatedMenuException("Olimp menu is unavailable")
-
+    if (dishTypeBlocks.isEmpty) {
+      //      throw NoUpdatedMenuException("Olimp menu is unavailable")
+      return menu
+    }
     dishTypeBlocks.forEach(block => {
       val dishType = block.select("h3").text
 

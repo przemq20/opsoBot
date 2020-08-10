@@ -1,9 +1,11 @@
 package opsobot.bot
 
+import java.time.temporal.ChronoUnit
+import java.time.{DayOfWeek, LocalDate, LocalTime}
 import java.util.Calendar
 
 import akka.actor.ActorSystem
-import opsobot.{OlimpParser, OpsoParser, randomJoke}
+import opsobot.{OlimpParser, OpsoParser}
 import org.slf4j.LoggerFactory
 import slack.SlackUtil
 import slack.rtm.SlackRtmClient
@@ -43,60 +45,52 @@ object Bot extends App {
     }
   }
 
-  Future {
-    while (true) {
-      if (//Calendar.getInstance().get(Calendar.MINUTE) % 3 == 1 &&
-        Calendar.getInstance().get(Calendar.SECOND) % 60 == 1) {
-        for (channel <- channels) {
-          client.sendMessage(channel, "OPSO MENU:")
-          client.sendMessage(channel, OpsoParser.parse().toString) //tutaj channel będzie do zmiany tylko jeszcze nie wiem na jaki, możliwe, że trzeba będzie to rozwiązać przez jakieś zapytanie do bota, albo wywołanie go na jakimś konkretnym kanale, na razie do testów pozostaje tak jak jest
-          client.sendMessage(channel, "OLIMP MENU:")
-          client.sendMessage(channel, OlimpParser.parse().toString)
-          logger.info(s"Sent menu, date: ${Calendar.getInstance().getTime}")
-        }
-      }
-      Thread.sleep(1000)
-    }
-  }
 
   Future {
     while (true) {
-      val dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
-      if (dayOfWeek == Calendar.TUESDAY || dayOfWeek == Calendar.THURSDAY || dayOfWeek == Calendar.FRIDAY) {
-        if (Calendar.getInstance().get(Calendar.HOUR) == 10 && Calendar.getInstance().get(Calendar.MINUTE) == 0 && Calendar.getInstance().get(Calendar.SECOND) == 0) {
-          for (channel <- channels) {
+      val currentDayOfWeek = LocalDate.now.getDayOfWeek
+      val currentTime = LocalTime.now.truncatedTo(ChronoUnit.SECONDS)
+      val localizedDay = Locale.dayOfWeek(currentDayOfWeek)
 
-            client.sendMessage(channel, s"Jest ${intToDayOfWeek(dayOfWeek)}, dzień PIZZY. Dzisiejsze menu to:")
-            client.sendMessage(channel, "OPSO MENU:")
-            client.sendMessage(channel, OpsoParser.parse().toString) //tutaj channel będzie do zmiany tylko jeszcze nie wiem na jaki, możliwe, że trzeba będzie to rozwiązać przez jakieś zapytanie do bota, albo wywołanie go na jakimś konkretnym kanale, na razie do testów pozostaje tak jak jest
-            client.sendMessage(channel, "OLIMP MENU:")
-            client.sendMessage(channel, OlimpParser.parse().toString)
-          }
-        }
-      }
-      else if (dayOfWeek == Calendar.MONDAY || dayOfWeek == Calendar.WEDNESDAY) {
-        if (Calendar.getInstance().get(Calendar.HOUR) == 11 && Calendar.getInstance().get(Calendar.MINUTE) == 0 && Calendar.getInstance().get(Calendar.SECOND) == 0) {
+      if (currentDayOfWeek == DayOfWeek.TUESDAY
+        || currentDayOfWeek == DayOfWeek.THURSDAY
+        || currentDayOfWeek == DayOfWeek.FRIDAY) {
+
+        val tenOClock = LocalTime.of(10, 0, 0)
+        if (currentTime == tenOClock) {
           for (channel <- channels) {
-            client.sendMessage(channel, s"Jest ${intToDayOfWeek(dayOfWeek)}. Dzisiejsze menu to:")
-            client.sendMessage(channel, "OPSO MENU:")
-            client.sendMessage(channel, OpsoParser.parse().toString) //tutaj channel będzie do zmiany tylko jeszcze nie wiem na jaki, możliwe, że trzeba będzie to rozwiązać przez jakieś zapytanie do bota, albo wywołanie go na jakimś konkretnym kanale, na razie do testów pozostaje tak jak jest
-            client.sendMessage(channel, "OLIMP MENU:")
-            client.sendMessage(channel, OlimpParser.parse().toString)
+            client.sendMessage(channel, s"Witaj w $localizedDay! Dzisiaj możesz zamówić PIZZUNIĘ w OPSO. Ponadto, menu na dzisiaj to:")
+            // client.sendMessage(channel, OpsoParser.parse().toString) //tutaj channel będzie do zmiany tylko jeszcze nie wiem na jaki, możliwe, że trzeba będzie to rozwiązać przez jakieś zapytanie do bota, albo wywołanie go na jakimś konkretnym kanale, na razie do testów pozostaje tak jak jest
+            sendMenu(channel, "OPSO", OpsoParser.parse().toString)
+            sendMenu(channel, "OLIMP", OlimpParser.parse().toString)
+          }
+        }
+      } else if (currentDayOfWeek == DayOfWeek.MONDAY
+        || currentDayOfWeek == DayOfWeek.WEDNESDAY) {
+        val elevenOClock = LocalTime.of(11, 0, 0)
+        if (currentTime == elevenOClock) {
+          for (channel <- channels) {
+            client.sendMessage(channel, s"Witaj w $localizedDay! Menu na dzisiaj to:")
+            sendMenu(channel, "OPSO", OpsoParser.parse().toString)
+            sendMenu(channel, "OLIMP", OlimpParser.parse().toString)
           }
         }
       }
-      Thread.sleep(1000)
+      Thread.sleep(999)
     }
   }
 
-  def intToDayOfWeek(day: Int): String = {
-    day match {
-      case Calendar.MONDAY => "poniedziałek"
-      case Calendar.TUESDAY => "wtorek"
-      case Calendar.WEDNESDAY => "środa"
-      case Calendar.TUESDAY => "czwartek"
-      case Calendar.FRIDAY => "piątek"
-      case _ => "INTERNAL ERROR"
-    }
+  def sendMenu(channel: String, restaurant: String, menu: String): Unit = {
+    val sb = new StringBuilder()
+    sb.addAll(restaurant.toUpperCase)
+    sb.addAll(" Menu:\n")
+    sb.addAll("----" * restaurant.length)
+    sb.addAll("\n")
+    sb.addAll(menu)
+    sb.addAll("\n")
+    sb.addAll("-" * 40)
+    sb.addAll("\n")
+    client.sendMessage(channel, sb.result())
+    logger.info(s"Sent menu, date: ${Calendar.getInstance().getTime}")
   }
 }
