@@ -13,6 +13,8 @@ import slack.rtm.SlackRtmClient
 import scala.concurrent.Future
 
 object TestBot extends App {
+  //class used in testing bot. It sends message every 10 seconds and have support to all commands.
+
   private val token = resources.Token.token
   var channel = "C017WCACXD5"
   implicit val system: ActorSystem = ActorSystem("slack")

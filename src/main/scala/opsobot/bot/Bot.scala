@@ -15,7 +15,6 @@ import scala.concurrent.Future
 
 object Bot extends App {
   private val token = resources.Token.token
-  //  var channel = "C017WCACXD5"
   var channels = ListBuffer[String]("C017WCACXD5")
   implicit val system: ActorSystem = ActorSystem("slack")
   val logger = LoggerFactory.getLogger(Bot.getClass)
