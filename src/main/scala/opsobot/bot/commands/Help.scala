@@ -1,7 +1,7 @@
 package opsobot.bot.commands
 
 object Help {
-  def help(): String = {
+  override def toString: String = {
     "-pizza\n" +
       "-joke\n" +
       "-addDailyReminder\n" +

@@ -18,7 +18,7 @@ object CommandParser {
       //do nothing
     }
     else if (command.equals("-pizza")) {
-      client.sendMessage(message.channel, "Tutaj kiedyś będzie menu z pizzą")
+      client.sendMessage(message.channel, commands.Pizza.toString)
       logger.info("Sent pizza menu")
     }
     else if (command.equals("-joke")) {
@@ -27,7 +27,7 @@ object CommandParser {
       logger.info("Sent joke")
     }
     else if (command.equals("-help")) {
-      client.sendMessage(message.channel, commands.Help.help())
+      client.sendMessage(message.channel, commands.Help.toString)
     }
     else if (command.equals("-addDailyReminder")) {
       if (Bot.channels.contains(message.channel)) {
