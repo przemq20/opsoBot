@@ -1,9 +1,8 @@
-package opsobot
+package opsobot.parsers
 
-
+import opsobot.Menu
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
-
 import scala.jdk.CollectionConverters._
 
 object OpsoParser {
@@ -25,12 +24,9 @@ object OpsoParser {
     }
 
     val currentDate = java.time.LocalDate.now
-    println(s"$opsoDate $currentDate")
-    try {
       if (opsoDate != currentDate) {
         //throw NoUpdatedMenuException("Opso menu is not up to date")
         return menu
-      }
     }
 
     val dateHeader = headers.first

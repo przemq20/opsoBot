@@ -1,5 +1,7 @@
 package opsobot
 
+import opsobot.parsers.OlimpParser
+
 object Main {
   def main(args: Array[String]): Unit = {
     val menu = OlimpParser.parse()

@@ -5,7 +5,7 @@ import java.time.{DayOfWeek, LocalDate, LocalTime}
 import java.util.Calendar
 
 import akka.actor.ActorSystem
-import opsobot.{OlimpParser, OpsoParser}
+import opsobot.parsers.{OlimpParser, OpsoParser}
 import org.slf4j.LoggerFactory
 import slack.SlackUtil
 import slack.rtm.SlackRtmClient
