@@ -22,7 +22,8 @@ object CommandParser {
       logger.info("Sent pizza menu")
     }
     else if (command.equals("-joke")) {
-      client.sendMessage(message.channel, RandomJoke.randomJoke())
+      RandomJoke.sendJoke(message.channel,client)
+      //      client.sendMessage(message.channel, RandomJoke.randomJoke())
       logger.info("Sent joke")
     }
     else if (command.equals("-help")) {
