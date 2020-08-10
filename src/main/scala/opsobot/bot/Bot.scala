@@ -6,7 +6,8 @@ import java.time.temporal.ChronoUnit
 import java.util.Calendar
 
 import akka.actor.ActorSystem
-import opsobot.{OlimpParser, OpsoParser, randomJoke}
+import opsobot.bot.TestBot.logger
+import opsobot.{OlimpParser, OpsoParser, RandomJoke}
 import org.slf4j.LoggerFactory
 import slack.SlackUtil
 import slack.rtm.SlackRtmClient
@@ -44,17 +45,6 @@ object Bot extends App {
     }
   }
 
-  Future {
-    while (true) {
-      val secondOfMinute = LocalTime.now.getSecond
-//      if (secondOfMinute == 0) {
-      sendMenu(channel, "OPSO", OpsoParser.parse().toString)
-      sendMenu(channel, "OLIMP", OlimpParser.parse().toString)
-      logger.info(s"Sent menu, date: ${Calendar.getInstance().getTime}")
-//      }
-      Thread.sleep(5000)
-    }
-  }
 
   Future {
     while (true) {
@@ -82,7 +72,7 @@ object Bot extends App {
           sendMenu(channel, "OLIMP", OlimpParser.parse().toString)
         }
       }
-      Thread.sleep(900)
+      Thread.sleep(999)
     }
   }
 
@@ -97,5 +87,6 @@ object Bot extends App {
     sb.addAll("-" * 40)
     sb.addAll("\n")
     client.sendMessage(channel, sb.result())
+    logger.info(s"Sent menu, date: ${Calendar.getInstance().getTime}")
   }
 }

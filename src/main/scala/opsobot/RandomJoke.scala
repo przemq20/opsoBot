@@ -3,7 +3,7 @@ package opsobot
 import scala.io.Source
 import spray.json._
 
-object randomJoke {
+object RandomJoke {
   val html = Source.fromURL("https://official-joke-api.appspot.com/jokes/random")
   val joke = html.mkString
   val spray = joke.map(_.toChar).mkString.parseJson
