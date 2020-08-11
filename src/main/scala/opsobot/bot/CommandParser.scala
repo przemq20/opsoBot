@@ -9,7 +9,8 @@ object CommandParser {
   val logger: Logger = LoggerFactory.getLogger(CommandParser.getClass)
 
   def greetings(message: Message, client: SlackRtmClient): Unit = {
-    client.sendMessage(message.channel, s"<@${message.user}>: Hey!")
+   val mess =  commands.Greetings.toString(message.user)
+    client.sendMessage(message.channel, mess)
   }
 
   def parse(command: String, message: Message, client: SlackRtmClient): Unit = {
