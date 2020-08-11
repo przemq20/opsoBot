@@ -1,6 +1,8 @@
 package opsobot.bot
 
 import opsobot.RandomJoke
+import opsobot.bot.Bot.sendMenu
+import opsobot.parsers.{OlimpParser, OpsoParser}
 import org.slf4j.{Logger, LoggerFactory}
 import slack.models.Message
 import slack.rtm.SlackRtmClient
@@ -48,7 +50,15 @@ object CommandParser {
         client.sendMessage(message.channel, "I can't delete this channel, because it's not on the list")
       }
     }
+    else if (command.equals("-opsoMenu")){
+      sendMenu(message.channel, "OPSO", OpsoParser.parse().toString)
+    }
+    else if (command.equals("-olimpMenu")){
+      sendMenu(message.channel, "Olimp", OlimpParser.parse().toString)
+    }
     else {
+      val text = s"Sorry, I don't understand \'$command\' :c "
+      client.sendMessage(message.channel, text)
       //sory, nie rozumiem twojej komendy
       //      client.sendMessage(message.channel, s"<@${message.user}>: Hey!")
     }
