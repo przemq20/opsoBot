@@ -5,6 +5,8 @@ object Help {
     "-pizza\n" +
       "-joke\n" +
       "-addDailyReminder\n" +
-      "-rmDailyReminder"
+      "-rmDailyReminder\n" +
+      "-opsoMenu\n" +
+      "-olimpMenu"
   }
 }
