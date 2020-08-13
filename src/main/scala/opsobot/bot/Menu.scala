@@ -1,9 +1,13 @@
 package opsobot.bot
 
 import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 
 class Menu() {
-  private val data: mutable.Map[String, List[String]] = mutable.Map[String, List[String]]()
+  val sortingOrder: List[String] = List[String]("Śniadania", "Zupy", "Danie mięsne lub rybne", "Dania z mięsem", "Dania z ryb", "Dania wegetariańskie",
+    "Dania wegańskie", "Dodatki", "Sałatka lub surówka", "Desery", "Napoje")
+
+  val data: mutable.Map[String, List[String]] = mutable.Map[String, List[String]]()
 
   def addCategory(category: String): mutable.Map[String, List[String]] = {
     addCategory(category, List.empty)
@@ -47,4 +51,9 @@ class Menu() {
       builder.result()
     }
   }
+
+  def sort(): Seq[(String, List[String])] = {
+    data.toSeq.sortWith((a, b) => sortingOrder.indexOf(a._1) < sortingOrder.indexOf(b._1))
+  }
+
 }

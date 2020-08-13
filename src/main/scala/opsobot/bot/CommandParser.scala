@@ -50,10 +50,11 @@ object CommandParser {
       }
     }
     else if (command.equals("-opsoMenu")){
-      sendMenu(message.channel, "OPSO", OpsoParser.parse().toString)
+      sendMenu(message.channel, "OPSO", makePretty(OpsoParser.parse().sort()))
     }
     else if (command.equals("-olimpMenu")){
-      sendMenu(message.channel, "Olimp", OlimpParser.parse().toString)
+      val menu = new Menu
+      sendMenu(message.channel, "Olimp", makePretty(OlimpParser.parse().sort()))
     }
     else {
       val text = s"Sorry, I don't understand \'$command\' :c "
@@ -61,5 +62,27 @@ object CommandParser {
       //sory, nie rozumiem twojej komendy
       //      client.sendMessage(message.channel, s"<@${message.user}>: Hey!")
     }
+  }
+
+  def makePretty(menu :Seq[(String, List[String])]): String ={
+    val builder = new StringBuilder()
+    if (menu.isEmpty) {
+      "Menu na dzisiaj jest niedostępne"
+    }
+    else {
+      menu.foreach(category => {
+        val categoryName = category._1
+        val dishesList = category._2
+        builder.addAll(categoryName)
+        builder.addAll(":")
+        dishesList.foreach(dish => {
+          builder.addAll("\n\t- ")
+          builder.addAll(dish)
+        })
+        builder.addAll("\n")
+      })
+      builder.result()
+    }
+
   }
 }

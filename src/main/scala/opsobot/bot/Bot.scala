@@ -5,6 +5,7 @@ import java.time.{DayOfWeek, LocalDate, LocalTime}
 import java.util.Calendar
 
 import akka.actor.ActorSystem
+import opsobot.bot.CommandParser.makePretty
 import opsobot.parsers.{OlimpParser, OpsoParser}
 import org.slf4j.{Logger, LoggerFactory}
 import slack.SlackUtil
@@ -15,7 +16,7 @@ import scala.concurrent.Future
 
 object Bot {
   private val token = resources.Token.token
-  var channels = ListBuffer[String]("C017WCACXD5")
+  var channels: ListBuffer[String] = ListBuffer[String]("C017WCACXD5")
   implicit val system: ActorSystem = ActorSystem("slack")
   val logger: Logger = LoggerFactory.getLogger(Bot.getClass)
 
@@ -61,8 +62,9 @@ object Bot {
             for (channel <- channels) {
               client.sendMessage(channel, s"Witaj w $localizedDay! Dzisiaj możesz zamówić PIZZUNIĘ w OPSO. Ponadto, menu na dzisiaj to:")
               // client.sendMessage(channel, OpsoParser.parse().toString) //tutaj channel będzie do zmiany tylko jeszcze nie wiem na jaki, możliwe, że trzeba będzie to rozwiązać przez jakieś zapytanie do bota, albo wywołanie go na jakimś konkretnym kanale, na razie do testów pozostaje tak jak jest
-              sendMenu(channel, "OPSO", OpsoParser.parse().toString)
-              sendMenu(channel, "OLIMP", OlimpParser.parse().toString)
+              sendMenus(channel)
+//              sendMenu(channel, "OPSO", OpsoParser.parse().sort().toString)
+//              sendMenu(channel, "OLIMP", OlimpParser.parse().sort().toString)
             }
           }
         } else if (currentDayOfWeek == DayOfWeek.MONDAY
@@ -71,8 +73,9 @@ object Bot {
           if (currentTime == elevenOClock) {
             for (channel <- channels) {
               client.sendMessage(channel, s"Witaj w $localizedDay! Menu na dzisiaj to:")
-              sendMenu(channel, "OPSO", OpsoParser.parse().toString)
-              sendMenu(channel, "OLIMP", OlimpParser.parse().toString)
+              sendMenus(channel)
+//              sendMenu(channel, "OPSO", OpsoParser.parse().sort().toString)
+//              sendMenu(channel, "OLIMP", OlimpParser.parse().sort().toString)
             }
           }
         }
@@ -94,4 +97,10 @@ object Bot {
     client.sendMessage(channel, sb.result())
     logger.info(s"Sent menu, date: ${Calendar.getInstance().getTime}")
   }
+
+  def sendMenus(channel: String): Unit ={
+    sendMenu(channel, "OPSO", makePretty(OlimpParser.parse().sort()))
+    sendMenu(channel, "Olimp", makePretty(OlimpParser.parse().sort().toList))
+  }
+
 }
