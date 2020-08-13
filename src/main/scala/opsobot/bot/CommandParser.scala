@@ -1,6 +1,5 @@
 package opsobot.bot
 
-import opsobot.RandomJoke
 import opsobot.bot.Bot.sendMenu
 import opsobot.parsers.{OlimpParser, OpsoParser}
 import org.slf4j.{Logger, LoggerFactory}

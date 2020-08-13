@@ -1,4 +1,4 @@
-package opsobot
+package opsobot.bot
 
 import scala.collection.mutable
 

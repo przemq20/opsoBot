@@ -1,4 +1,4 @@
-package opsobot
+package opsobot.bot
 
 final case class NoUpdatedMenuException(private val message: String = "Menu is unavailable",
                                         private val cause: Throwable = None.orNull)

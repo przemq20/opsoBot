@@ -6,76 +6,78 @@ import java.util.Calendar
 
 import akka.actor.ActorSystem
 import opsobot.parsers.{OlimpParser, OpsoParser}
-import org.slf4j.LoggerFactory
+import org.slf4j.{Logger, LoggerFactory}
 import slack.SlackUtil
 import slack.rtm.SlackRtmClient
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future
 
-object Bot extends App {
+object Bot {
   private val token = resources.Token.token
   var channels = ListBuffer[String]("C017WCACXD5")
   implicit val system: ActorSystem = ActorSystem("slack")
-  val logger = LoggerFactory.getLogger(Bot.getClass)
+  val logger: Logger = LoggerFactory.getLogger(Bot.getClass)
 
   import system.dispatcher
 
-  val client = SlackRtmClient(token)
+  val client: SlackRtmClient = SlackRtmClient(token)
 
-  Future {
-    client.onMessage { message =>
-      val mentionedIds = SlackUtil.extractMentionedIds(message.text)
-      logger.info(s"Client ID: ${client.getState().self.id}")
-      if (mentionedIds.contains(client.getState().self.id)) {
-        CommandParser.greetings(message, client)
-        val commands = message.text.split(" ").distinct
+  def run() {
+    Future {
+      client.onMessage { message =>
+        val mentionedIds = SlackUtil.extractMentionedIds(message.text)
+        logger.info(s"Client ID: ${client.getState().self.id}")
+        if (mentionedIds.contains(client.getState().self.id)) {
+          CommandParser.greetings(message, client)
+          val commands = message.text.split(" ").distinct
 
-        logger.info(s"I received commands: ${commands.mkString("Array(", ", ", ")")}")
-        if (commands.length == 1) {
-          client.sendMessage(message.channel, "Jeśli potrzebujesz pomocy wpisz \"@opsoolimpbot -help\"")
-        }
-        else {
-          for (command <- commands) {
-            CommandParser.parse(command, message, client)
+          logger.info(s"I received commands: ${commands.mkString("Array(", ", ", ")")}")
+          if (commands.length == 1) {
+            client.sendMessage(message.channel, "Jeśli potrzebujesz pomocy wpisz \"@opsoolimpbot -help\"")
+          }
+          else {
+            for (command <- commands) {
+              CommandParser.parse(command, message, client)
+            }
           }
         }
       }
     }
-  }
 
 
-  Future {
-    while (true) {
-      val currentDayOfWeek = LocalDate.now.getDayOfWeek
-      val currentTime = LocalTime.now.truncatedTo(ChronoUnit.SECONDS)
-      val localizedDay = Locale.dayOfWeek(currentDayOfWeek)
+    Future {
+      while (true) {
+        val currentDayOfWeek = LocalDate.now.getDayOfWeek
+        val currentTime = LocalTime.now.truncatedTo(ChronoUnit.SECONDS)
+        val localizedDay = Locale.dayOfWeek(currentDayOfWeek)
 
-      if (currentDayOfWeek == DayOfWeek.TUESDAY
-        || currentDayOfWeek == DayOfWeek.THURSDAY
-        || currentDayOfWeek == DayOfWeek.FRIDAY) {
+        if (currentDayOfWeek == DayOfWeek.TUESDAY
+          || currentDayOfWeek == DayOfWeek.THURSDAY
+          || currentDayOfWeek == DayOfWeek.FRIDAY) {
 
-        val tenOClock = LocalTime.of(10, 0, 0)
-        if (currentTime == tenOClock) {
-          for (channel <- channels) {
-            client.sendMessage(channel, s"Witaj w $localizedDay! Dzisiaj możesz zamówić PIZZUNIĘ w OPSO. Ponadto, menu na dzisiaj to:")
-            // client.sendMessage(channel, OpsoParser.parse().toString) //tutaj channel będzie do zmiany tylko jeszcze nie wiem na jaki, możliwe, że trzeba będzie to rozwiązać przez jakieś zapytanie do bota, albo wywołanie go na jakimś konkretnym kanale, na razie do testów pozostaje tak jak jest
-            sendMenu(channel, "OPSO", OpsoParser.parse().toString)
-            sendMenu(channel, "OLIMP", OlimpParser.parse().toString)
+          val tenOClock = LocalTime.of(10, 0, 0)
+          if (currentTime == tenOClock) {
+            for (channel <- channels) {
+              client.sendMessage(channel, s"Witaj w $localizedDay! Dzisiaj możesz zamówić PIZZUNIĘ w OPSO. Ponadto, menu na dzisiaj to:")
+              // client.sendMessage(channel, OpsoParser.parse().toString) //tutaj channel będzie do zmiany tylko jeszcze nie wiem na jaki, możliwe, że trzeba będzie to rozwiązać przez jakieś zapytanie do bota, albo wywołanie go na jakimś konkretnym kanale, na razie do testów pozostaje tak jak jest
+              sendMenu(channel, "OPSO", OpsoParser.parse().toString)
+              sendMenu(channel, "OLIMP", OlimpParser.parse().toString)
+            }
+          }
+        } else if (currentDayOfWeek == DayOfWeek.MONDAY
+          || currentDayOfWeek == DayOfWeek.WEDNESDAY) {
+          val elevenOClock = LocalTime.of(11, 0, 0)
+          if (currentTime == elevenOClock) {
+            for (channel <- channels) {
+              client.sendMessage(channel, s"Witaj w $localizedDay! Menu na dzisiaj to:")
+              sendMenu(channel, "OPSO", OpsoParser.parse().toString)
+              sendMenu(channel, "OLIMP", OlimpParser.parse().toString)
+            }
           }
         }
-      } else if (currentDayOfWeek == DayOfWeek.MONDAY
-        || currentDayOfWeek == DayOfWeek.WEDNESDAY) {
-        val elevenOClock = LocalTime.of(11, 0, 0)
-        if (currentTime == elevenOClock) {
-          for (channel <- channels) {
-            client.sendMessage(channel, s"Witaj w $localizedDay! Menu na dzisiaj to:")
-            sendMenu(channel, "OPSO", OpsoParser.parse().toString)
-            sendMenu(channel, "OLIMP", OlimpParser.parse().toString)
-          }
-        }
+        Thread.sleep(999)
       }
-      Thread.sleep(999)
     }
   }
 

@@ -1,8 +1,9 @@
 package opsobot.parsers
 
-import opsobot.Menu
+import opsobot.bot.Menu
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
+
 import scala.jdk.CollectionConverters._
 
 object OpsoParser {

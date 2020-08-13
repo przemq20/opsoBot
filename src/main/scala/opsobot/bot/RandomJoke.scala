@@ -1,13 +1,13 @@
-package opsobot
+package opsobot.bot
 
 import slack.rtm.SlackRtmClient
+import spray.json._
 
 import scala.io.{BufferedSource, Source}
-import spray.json._
 
 object RandomJoke {
 
-  def getRandomJoke: (JsValue, JsValue) ={
+  def getRandomJoke: (JsValue, JsValue) = {
     val html: BufferedSource = Source.fromURL("https://official-joke-api.appspot.com/jokes/random")
     val joke: String = html.mkString
     val spray: JsValue = joke.map(_.toChar).mkString.parseJson
@@ -19,7 +19,7 @@ object RandomJoke {
 
 
   def randomJoke(): String = {
-    val (v1,v2) = getRandomJoke
+    val (v1, v2) = getRandomJoke
     val builder = new StringBuilder
     builder.addAll(v1.toString())
     builder.addAll("\n.\n.\n.\n")
@@ -27,8 +27,8 @@ object RandomJoke {
     builder.result()
   }
 
-  def sendJoke(channel: String,client: SlackRtmClient): Unit ={
-    val (v1,v2) = getRandomJoke
+  def sendJoke(channel: String, client: SlackRtmClient): Unit = {
+    val (v1, v2) = getRandomJoke
     client.sendMessage(channel, "Here's a joke for you:")
     Thread.sleep(1000)
     client.sendMessage(channel, v1.toString())
