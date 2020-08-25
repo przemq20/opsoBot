@@ -10,61 +10,46 @@ object CommandParser {
   val logger: Logger = LoggerFactory.getLogger(CommandParser.getClass)
 
   def greetings(message: Message, client: SlackRtmClient): Unit = {
-   val mess =  commands.Greetings.toString(message.user)
+    val mess = commands.Greetings.toString(message.user)
     client.sendMessage(message.channel, mess)
   }
 
   def parse(command: String, message: Message, client: SlackRtmClient): Unit = {
-
-    if (command.equals(s"<@${client.getState().self.id}>")) {
-      //do nothing
-    }
-    else if (command.equals("-pizza")) {
-      client.sendMessage(message.channel, commands.Pizza.toString)
-      logger.info("Sent pizza menu")
-    }
-    else if (command.equals("-joke")) {
-      RandomJoke.sendJoke(message.channel,client)
-      //      client.sendMessage(message.channel, RandomJoke.randomJoke())
-      logger.info("Sent joke")
-    }
-    else if (command.equals("-help")) {
-      client.sendMessage(message.channel, commands.Help.toString)
-    }
-    else if (command.equals("-addDailyReminder")) {
-      if (Bot.channels.contains(message.channel)) {
-        client.sendMessage(message.channel, "This channel already is subscribing to daily menu")
-      }
-      else {
-        client.sendMessage(message.channel, "ok, from now on, i will send daily menu to this channel")
-        Bot.channels += message.channel
-      }
-    }
-    else if (command.equals("-rmDailyReminder")) {
-      if (Bot.channels.contains(message.channel)) {
-        client.sendMessage(message.channel, "Ok, you will not received my daily updates")
-        Bot.channels.subtractOne(message.channel)
-      }
-      else {
-        client.sendMessage(message.channel, "I can't delete this channel, because it's not on the list")
-      }
-    }
-    else if (command.equals("-opsoMenu")){
-      sendMenu(message.channel, "OPSO", makePretty(OpsoParser.parse().sort()))
-    }
-    else if (command.equals("-olimpMenu")){
-      val menu = new Menu
-      sendMenu(message.channel, "Olimp", makePretty(OlimpParser.parse().sort()))
-    }
-    else {
-      val text = s"Sorry, I don't understand \'$command\' :c "
-      client.sendMessage(message.channel, text)
-      //sory, nie rozumiem twojej komendy
-      //      client.sendMessage(message.channel, s"<@${message.user}>: Hey!")
+    command match {
+      case "<@${client.getState().self.id}>" => //do nothing
+      case "-pizza" =>
+        client.sendMessage(message.channel, commands.Pizza.toString)
+        logger.info("Sent pizza menu")
+      case "-joke" =>
+        RandomJoke.sendJoke(message.channel, client)
+        logger.info("Sent joke")
+      case "-help" =>
+        client.sendMessage(message.channel, commands.Help.toString)
+      case "-addDailyReminder" =>
+        if (Bot.channels.contains(message.channel)) {
+          client.sendMessage(message.channel, "This channel already is subscribing to daily menu")
+        }
+        else {
+          client.sendMessage(message.channel, "ok, from now on, i will send daily menu to this channel")
+          Bot.channels += message.channel
+        }
+      case "-rmDailyReminder" =>
+        if (Bot.channels.contains(message.channel)) {
+          client.sendMessage(message.channel, "Ok, you will not received my daily updates")
+          Bot.channels.subtractOne(message.channel)
+        }
+        else {
+          client.sendMessage(message.channel, "I can't delete this channel, because it's not on the list")
+        }
+      case "-opsoMenu" => sendMenu(message.channel, "OPSO", makePretty(OpsoParser.parse().sort()))
+      case "-olimpMenu" => sendMenu(message.channel, "Olimp", makePretty(OlimpParser.parse().sort()))
+      case _ =>
+        val text = s"Sorry, I don't understand \'$command\' :c "
+        client.sendMessage(message.channel, text)
     }
   }
 
-  def makePretty(menu :Seq[(String, List[String])]): String ={
+  def makePretty(menu: Seq[(String, List[String])]): String = {
     val builder = new StringBuilder()
     if (menu.isEmpty) {
       "Menu na dzisiaj jest niedostępne"
@@ -83,6 +68,5 @@ object CommandParser {
       })
       builder.result()
     }
-
   }
 }
